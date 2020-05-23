@@ -44,6 +44,14 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
+IF (NOT WIN32)
+    set (BUILD_SHARED_LIBRARY ON CACHE BOOL "build shared library")
+ELSE ()
+    set (BUILD_SHARED_LIBRARY OFF CACHE BOOL "build shared library")
+ENDIF ()
+
+
+
 # OpenCV classes
 find_package(OpenCV)
 if(OpenCV_FOUND)
@@ -57,7 +65,17 @@ if(OpenCV_FOUND)
 endif()
 
 include_directories(core/src)
-add_library(libzxing ${LIBZXING_FILES})
+
+
+if (BUILD_SHARED_LIBRARY)
+    set (BUILD_SHARED_LIBS ON)
+    set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+    add_library(libzxing SHARED ${LIBZXING_FILES})
+else()
+    add_library(libzxing ${LIBZXING_FILES})
+endif()
+
 set_target_properties(libzxing PROPERTIES PREFIX "")
 
 find_package(Iconv)
@@ -76,6 +94,28 @@ if(OpenCV_FOUND)
     )
     add_executable(zxing-cv ${OPENCV_ZXING_FILES})
     target_link_libraries(zxing-cv libzxing ${OpenCV_LIBRARIES})
+
+
+    install(TARGETS libzxing EXPORT zxing-targets
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        ARCHIVE DESTINATION lib
+        INCLUDES DESTINATION include
+    )
+
+
+else()
+    add_executable(zxing ${ZXING_FILES})
+    target_link_libraries(zxing libzxing)
+
+    install(TARGETS zxing libzxing EXPORT zxing-targets
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        ARCHIVE DESTINATION lib
+        INCLUDES DESTINATION include
+    )
+
+
 endif()
 
 # Add cli executable.
@@ -84,15 +124,7 @@ file(GLOB_RECURSE ZXING_FILES
     "./cli/src/*.h"
 )
 
-add_executable(zxing ${ZXING_FILES})
-target_link_libraries(zxing libzxing)
 
-install(TARGETS zxing libzxing EXPORT zxing-targets
-	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin
-	ARCHIVE DESTINATION lib
-    INCLUDES DESTINATION include
-)
 
 install(EXPORT zxing-targets DESTINATION lib/zxing/cmake NAMESPACE zxing::)
 
