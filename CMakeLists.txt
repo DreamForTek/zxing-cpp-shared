@@ -8,16 +8,6 @@ set(CMAKE_LIBRARY_PATH /opt/local/lib ${CMAKE_LIBRARY_PATH})
 
 
 
-# Suppress in-source builds.
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-    message(FATAL_ERROR
-        "CMake generation is not allowed within the source directory:"
-        "\n  * mkdir build"
-        "\n  * cd build"
-        "\n  * Unix-like: cmake -G \"Unix Makefiles\" .."
-        "\n  * Windows: cmake -G \"Visual Studio 10\" ..")
-endif()
-
 # Adjust CMake's module path.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/FindModules)
 
