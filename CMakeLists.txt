@@ -6,14 +6,7 @@ option(BUILD_TESTING "Enable generation of test targets" OFF)
 
 set(CMAKE_LIBRARY_PATH /opt/local/lib ${CMAKE_LIBRARY_PATH})
 
-# Check for polluted source tree.
-if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt OR
-    EXISTS ${CMAKE_SOURCE_DIR}/CMakeFiles)
-    message(FATAL_ERROR
-        "Source directory is polluted:"
-        "\n  * remove CMakeCache.txt"
-        "\n  * remove CMakeFiles directory")
-endif()
+
 
 # Suppress in-source builds.
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
